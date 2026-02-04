@@ -66,25 +66,25 @@
 % PDF file to comply to accessibility standards. (And yes, this information
 % must remain here, before \documentclass[...]{...}.)
 
-\def\myfititle{Kuvaava otsikko}
-\def\myentitle{A Descriptive title}
-\def\myauthor{Firstname Lastname}
-\def\myfisubtitle{Tarkentava alaotsikko}
-\def\myensubtitle{A Specifying Subtitle}
-\def\myfithesistype{Opinnäytetyön taso}
-\def\myenthesistype{Thesis type}
-\def\myexaminers{Title1 Firstname1 Lastname1 \\ Title2 Firstname2 Lastname2 \\ ...}
-\def\myfifacultyname{Tiedekunnan nimi}
-\def\myenfacultyname{The name of the faculty}
-\def\myfiprogrammename{Tutkinto-ohjelman nimi}
-\def\myenprogrammename{The name of the study programme}
-\def\myfikeywords{avainsana1, avainsana2, ...}
-\def\myenkeywords{keyword1, keyword2, ...}
+\def\myfititle{Visual Intertial SLAM on custom hardware sensor box}
+\def\myentitle{Visual Intertial SLAM on custom hardware sensor box}
+\def\myauthor{Juuso Järvenpää\\Eetu Silvennoinen\\Joona Leivo}
+\def\myfisubtitle{}
+\def\myensubtitle{}
+\def\myfithesistype{ROBO.666 Project Report}
+\def\myenthesistype{ROBO.666 Project Report}
+\def\myexaminers{}
+\def\myfifacultyname{Tekniikan ja luonnontieteiden tiedekunta}
+\def\myenfacultyname{Faculty of Engineering and Natural Sciences}
+\def\myfiprogrammename{Automaatiotekniikka}
+\def\myenprogrammename{Automation technology}
+\def\myfikeywords{}
+\def\myenkeywords{}
 \def\mylanguagecode{en-US}
 \def\mysubject{A short description of the thesis subject.}
-\def\myyear{2023}
-\def\mymonth{06}
-\def\myday{03}
+\def\myyear{2026}
+\def\mymonth{02}
+\def\myday{04}
 
 %%%%% PREAMBLE %%%%%
 
@@ -158,7 +158,7 @@
 % Print the default glossary of abbreviations, if necessary. Otherwise comment
 % out. The appropriate Finnish variant is 'Lyhenteet'
 
-\printglossary[title={Lyhenteet ja merkinnät}]
+% \printglossary[title={Lyhenteet ja merkinnät}]
 
 % Print more than one glossary with these lines. Otherwise comment out.
 
@@ -175,9 +175,12 @@
 % their files as descriptive names as possible.
 
 \input{tex/introduction}
-
-\input{tex/usage}
-
+\input{tex/project.tex}
+\input{tex/system-overview}
+\input{tex/sensor-setup.tex}
+\input{tex/slam}
+\input{tex/cicd.tex}
+\input{tex/experiments}
 \input{tex/conclusion}
 
 %%%%% Bibliography/references.
@@ -186,7 +189,7 @@
 % and the in-line citations used in the body of the thesis.
 
 % \emergencystretch=2em
-\printbibliography[heading=bibintoc]
+% \printbibliography[heading=bibintoc]
 
 %%%%% Appendices.
 
