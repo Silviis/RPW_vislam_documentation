@@ -9,19 +9,15 @@ This chapter details the sensor setup and calibration procedures used in the pro
 This subsection details the processes for the intrinsic calibration of both cameras and the IMU, as well as the extrinsic calibration of the whole sensor setup.
 
 \subsection{Camera Calibration}\label{sec:cam_intrinsic_calibration}
-We used the Kalibr toolbox  for intrinsic camera calibration.
-
+By default, images taken by an uncalibrated camera are distorted and it is impossible to determine which points in an image taken from one camera correspond to the points from another camera's image. VI-SLAM is based on feature matching between images taken from multiple cameras, therefore good calibration is mandatory.
 
 The calibration process involved capturing multiple images of a known calibration pattern
 from different angles and distances with the stereo camera setup. This was done to acquire the following intrinsic parameters: 
-focal lengths $f_x$ and $f_y$, principal points $c_x$ and $c_y$, 
-
-The Kalibr toolbox then processed these images to
-estimate the intrinsic parameters of the cameras, including focal length, principal point,
-and distortion coefficients.
+focal lengths $f_x$ and $f_y$, principal points $c_x$ and $c_y$, and distortion parameters $k_1$, $k_2$, $k_3$
+and $k_4$. Focal lengths and principal points are in pixels. We chose two different tools for camera calibration; Kalibr and camera\_calibration toolboxes, which both have ROS implementations. In addition to aforementioned parameters, camera\_calibration toolbox also computed rectification matrices for both cameras. This is crucial for VI-SLAM algorithm to be able to detect same features in both images, as they project two images from separate cameras onto a common image plane so that corresponding points on both images have the same row coordinate.  Kalibr toolbox was used to calculate the extrinsic parameters of the stereo setup, i.e. rotation matrix $\textbf{R}$ and translation vector $\textbf{t}$ from one camera to another, which was needed for extrinsic calibration of the whole setup.
 
 \subsection{IMU Intrinsic Calibration}\label{sec:imu_intrinsic_calibration}
-
+Consumer-grade IMUs, such as ICM20948, tend to be noisy. The effect of the noise on VI-SLAM performance is reduced by estimating the characteristics of the different noise components corrupting the IMU
 
 \subsection{Extrinsic camera-IMU calibration}\label{sec:extrinsic_calibration}
 The extrinsic calibration between the stereo camera and the IMU was also performed using

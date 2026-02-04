@@ -5,11 +5,11 @@ Section \ref{sec:hw-overview} details the hardware components used in the system
 while Section \ref{sec:sw-overview} outlines the software architecture and its design principles.
 
 \section{Hardware overview}\label{sec:hw-overview}
-The hardware setup consists of a single board computer, a stereo camera, and an
-Inertial Measurement Unit (IMU). The single board computer serves as the main processing
-unit, handling data acquisition, processing, and running the SLAM algorithms. The stereo
-camera captures visual data from the environment, while the IMU provides motion and
-orientation information. The IMU sensor is located on the same board as the camera.
+The hardware setup consists of a single board computer (seen in Figure \ref{fig:xavier.jpg}), a stereo camera, and an
+Inertial Measurement Unit (IMU) (both of which can be seen in Figure \ref{fig:imx219-83.jpg}).
+The single board computer serves as the main processing unit, handling data acquisition, processing,
+and running the SLAM algorithms. The stereo camera captures visual data from the environment, while the IMU
+provides motion and orientation information. The IMU sensor is located on the same board as the camera.
 
 Here is a detailed list of the hardware components used:
 \begin{itemize}
@@ -23,21 +23,51 @@ Here is a detailed list of the hardware components used:
         \item 2 × 8-megapixel cameras, 3280 × 2464 resolution
         \item Sony IMX219 sensor
         \item ICM-20948 9-axis IMU (3-axis gyroscope, 3-axis accelerometer, 3-axis magnetometer)
+        \item I2C and SPI interfaces for IMU communication
+        \item CSI interface for camera communication
     \end{itemize}
 \end{itemize}
 
 \addpicture{imx219-83.jpg}{IMX219-83 Stereo Camera + IMU sensor board.}
 
+\addpicture{xavier.jpg}{Jetson Xavier NX single board computer.}
 
+\section{Software Architecture}\label{sec:sw-overview}
 
-\section{Software architecture}\label{sec:sw-overview}
-The software architecture is designed to be modular and scalable, allowing for easy
-integration of new features and components. Docker is used for containerization to ensure
-consistent environments across different deployment platforms, as well as to simplify 
-development and deployment processes. There are two separate Docker containers:
-\begin{itemize}
-    \item \textbf{ros2\_cam}: This container is responsible for running
-    \item \textbf{ros2\_slam}: This container handles
-\end{itemize}
+The software architecture of the system is based on the Robot Operating System 2 (ROS~2) and
+follows a modular, node-based design. The architecture is structured to clearly separate
+sensor data acquisition, preprocessing, and state estimation, enabling flexibility,
+maintainability, and scalability. All components communicate through ROS~2 topics, forming a
+unidirectional data flow from sensors to the SLAM backend.
 
+Stereo image acquisition is handled by a custom stereo camera driver node, which interfaces
+directly with the onboard CSI cameras using a GStreamer-based capture pipeline. The driver
+publishes left and right camera image streams, along with their corresponding
+\texttt{camera\_info} messages, providing intrinsic calibration parameters required by
+downstream processing nodes.
 
+The raw stereo image streams are processed by standard ROS~2 image processing nodes
+(\texttt{image\_proc}), which perform image rectification based on the provided camera
+calibration data. The resulting rectified images are published as separate ROS~2 topics and
+serve as the primary visual input for the SLAM system.
+
+Inertial measurements are provided by an IMU driver node communicating with the sensor over
+an I2C interface. The node publishes raw angular velocity and linear acceleration data using
+the standard ROS~2 IMU message format. These inertial measurements complement the visual data
+by providing high-rate motion information, improving robustness and scale observability in
+the SLAM pipeline.
+
+The SLAM subsystem subscribes to the rectified stereo image topics and IMU data streams to
+perform visual-inertial state estimation and mapping. Time synchronization between sensor
+streams is handled using ROS~2 message timestamps, allowing the system to accommodate
+different sensor update rates. Figure 
+%\ref{fig:rqt_graph.jpg}
+illustrates the high-level ROS architecture and data flow of the system.
+
+% ADD RQT GRAPH HERE
+% \addpicture{rqt_graph.jpg}{ROS2 node graph showing the system architecture and data flow.}
+
+The modular design of the software architecture allows individual components to be developed,
+tested, and replaced independently. This design choice also facilitates future extensions,
+such as integrating alternative SLAM backends or additional sensors, without requiring major
+changes to the overall system structure.
