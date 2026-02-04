@@ -1,9 +1,72 @@
 \chapter{Sensor Setup and Calibration}\label{ch:sensor-setup}
 This chapter details the sensor setup and calibration procedures used in the project.
+Reliable visual-inertial SLAM critically depends on accurate sensor configuration and
+precise calibration, as errors in sensor timing, intrinsic parameters, or sensor alignment
+directly affect state estimation accuracy and map consistency. For this reason, particular
+attention was paid to the correct setup of both the stereo camera and the inertial
+measurement unit (IMU), as well as to the calibration of their intrinsic parameters and
+their relative pose.
+
+The chapter first describes the practical setup and data acquisition pipelines of the
+stereo camera and IMU (sections \ref{sec:stereo-cam-setup} and \ref{sec:imu-setup}),
+including hardware interfacing, driver configuration, and data
+publication within the ROS~2 framework. It then presents the calibration procedures 
+used to estimate camera intrinsics, IMU characteristics, and the extrinsic transformation
+between the camera and IMU frames (in section \ref{sec:calibration}). These calibration results form
+the basis for the sensor preprocessing and visual-inertial fusion described in the subsequent SLAM
+implementation.
 
 \section{Stereo Camera setup}\label{sec:stereo-cam-setup}
+The visual sensing subsystem is based on an IMX219-83 stereo camera, consisting of two
+independent image sensors mounted with a fixed baseline. The cameras are interfaced with the
+Jetson Xavier NX through the CSI interface, enabling low-latency and high-bandwidth image
+acquisition suitable for real-time visual-inertial SLAM.
+
+A custom ROS~2 stereo camera driver is used to capture image frames from the left and right
+cameras. Internally, the driver utilizes a GStreamer-based capture pipeline to acquire image
+data from the camera hardware. The cameras are not hardware-synchronized; instead, image
+capture commands for the left and right cameras are issued sequentially within the same
+execution thread. Timestamps are recorded individually for each captured frame and attached
+to the corresponding ROS~2 image messages.
+
+The driver publishes raw stereo image streams on dedicated ROS~2 topics, namely
+\texttt{/stereo/left/image\_raw} and \texttt{/stereo/right/image\_raw}. In addition, the
+corresponding \texttt{camera\_info} topics are published, providing the intrinsic calibration
+parameters required for image rectification and downstream processing.
+
+Image rectification is performed using standard ROS~2 \texttt{image\_proc} nodes. These nodes
+subscribe to the raw image and \texttt{camera\_info} topics and apply the intrinsic calibration
+parameters to correct lens distortion and produce rectified image streams. The rectified
+images are then published as separate ROS~2 topics and used as visual input for the SLAM
+system.
+
+Although the cameras are not hardware-synchronized, the small temporal offset between image
+pairs is acceptable for the targeted indoor scenarios and motion speeds. The timestamped
+image streams allow the SLAM system to associate corresponding stereo frames during visual
+processing. Detailed calibration procedures and parameter estimation are described in
+Section~\ref{sec:calibration}.
 
 \section{Inertial Measurement Unit (IMU) setup}\label{sec:imu-setup}
+The inertial sensing subsystem is based on the ICM-20948 IMU integrated into the custom
+sensor box. The IMU is interfaced with the Jetson Xavier NX using an I2C connection, and a
+custom ROS~2 IMU driver node is used to acquire and publish raw inertial measurements. The
+driver publishes angular velocity and linear acceleration measurements on the
+\texttt{/imu/data\_raw} topic using the standard ROS~2 \texttt{sensor\_msgs/Imu} message
+format.
+
+To provide an orientation estimate and to output a SLAM-compatible IMU topic, the raw IMU
+stream is processed using the \texttt{imu\_filter\_madgwick} package. The Madgwick filter
+subscribes to \texttt{/imu/data\_raw} and publishes the filtered IMU messages on
+\texttt{/imu/data}, which is the topic consumed by the SLAM components. In this project, the
+filter was configured to operate without magnetometer fusion (\texttt{use\_mag = false}),
+and without publishing TF transforms (\texttt{publish\_tf = false}), as the SLAM framework
+handles state estimation and frame relationships at a higher level.
+
+The filter parameters were selected to provide stable orientation estimates in indoor
+environments. The applied configuration includes a gain of 0.1 and a world frame convention
+set to \texttt{nwu}. The Madgwick filter thereby acts as an intermediate preprocessing stage,
+converting raw inertial readings into a standardized IMU topic suitable for real-time
+visual-inertial odometry and SLAM.
 
 \section{Calibration}\label{sec:calibration}
 This subsection details the processes for the intrinsic calibration of both cameras and the IMU, as well as the extrinsic calibration of the whole sensor setup.
@@ -17,7 +80,9 @@ focal lengths $f_x$ and $f_y$, principal points $c_x$ and $c_y$, and distortion 
 and $k_4$. Focal lengths and principal points are in pixels. We chose two different tools for camera calibration; Kalibr and camera\_calibration toolboxes, which both have ROS implementations. In addition to aforementioned parameters, camera\_calibration toolbox also computed rectification matrices for both cameras. This is crucial for VI-SLAM algorithm to be able to detect same features in both images, as they project two images from separate cameras onto a common image plane so that corresponding points on both images have the same row coordinate.  Kalibr toolbox was used to calculate the extrinsic parameters of the stereo setup, i.e. rotation matrix $\textbf{R}$ and translation vector $\textbf{t}$ from one camera to another, which was needed for extrinsic calibration of the whole setup.
 
 \subsection{IMU Intrinsic Calibration}\label{sec:imu_intrinsic_calibration}
-Consumer-grade IMUs, such as ICM20948, tend to be noisy. The effect of the noise on VI-SLAM performance is reduced by estimating the characteristics of the different noise components corrupting the IMU
+Consumer-grade IMUs, such as ICM20948, tend to be noisy. The effect of the noise on VI-SLAM performance is reduced by estimating the characteristics of the different noise components corrupting the IMU measurements. The noise parameters that are estimated for our chosen VI-SLAM method are noise densities $\sigma_a$ and $\sigma_g$, and the slowly varying sensor biases $\sigma_{b_a}$ and $\sigma_{b_a}$, also called "random walk". Lower indices $a$ and $g$ denote accelerometer and gyroscope respectively.
+
+These parameters were estimated using Allan variance method. For calibration
 
 \subsection{Extrinsic camera-IMU calibration}\label{sec:extrinsic_calibration}
 The extrinsic calibration between the stereo camera and the IMU was also performed using
