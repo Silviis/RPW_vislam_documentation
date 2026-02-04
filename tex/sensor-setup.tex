@@ -82,7 +82,10 @@ and $k_4$. Focal lengths and principal points are in pixels. We chose two differ
 \subsection{IMU Intrinsic Calibration}\label{sec:imu_intrinsic_calibration}
 Consumer-grade IMUs, such as ICM20948, tend to be noisy. The effect of the noise on VI-SLAM performance is reduced by estimating the characteristics of the different noise components corrupting the IMU measurements. The noise parameters that are estimated for our chosen VI-SLAM method are noise densities $\sigma_a$ and $\sigma_g$, and the slowly varying sensor biases $\sigma_{b_a}$ and $\sigma_{b_a}$, also called "random walk". Lower indices $a$ and $g$ denote accelerometer and gyroscope respectively.
 
-These parameters were estimated using Allan variance method. For calibration, 11 hours of stationary IMU data were recorded. We chose allan\_variance\_ros toolbox for calibration. In short, Allan variance 
+These parameters were estimated using Allan variance method. For calibration, 11 hours of stationary IMU data were recorded. We chose allan\_variance\_ros toolbox for calibration. In short, Allan variance $\sigma_y^2$ and Allan deviation $\sigma_y$ are functions of sample-time $\tau$, which can then plotted on a log-log plot to determine the noise characteristics, as seen in \ref{fig:allan_gyro} and \ref{fig:allan_accel}. Noise densities $\sigma_a$ can be estima
+
+\addpicture{gyro.png}{Allan deviation plot of gyroscope measurements.}\label{fig:allan_gyro}
+\addpicture{acceleration.png}{Allan deviation plot of accelerometer measurements.}\label{fig:allan_accel}
 
 \subsection{Extrinsic camera-IMU calibration}\label{sec:extrinsic_calibration}
 The extrinsic calibration between the stereo camera and the IMU was also performed using
