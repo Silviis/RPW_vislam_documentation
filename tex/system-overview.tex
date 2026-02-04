@@ -1,12 +1,36 @@
 \chapter{System Overview and Architecture}\label{ch:system-overview}
 This chapter provides an overview of the system architecture and its components.
 It describes how the various modules interact to achieve the desired functionality.
+Section \ref{sec:hw-overview} details the hardware components used in the system,
+while Section \ref{sec:sw-overview} outlines the software architecture and its design principles.
+
+\section{Hardware overview}\label{sec:hw-overview}
+The hardware setup consists of a single board computer, a stereo camera, and an
+Inertial Measurement Unit (IMU). The single board computer serves as the main processing
+unit, handling data acquisition, processing, and running the SLAM algorithms. The stereo
+camera captures visual data from the environment, while the IMU provides motion and
+orientation information. The IMU sensor is located on the same board as the camera.
+
+Here is a detailed list of the hardware components used:
+\begin{itemize}
+    \item \textbf{Single Board Computer}: NVIDIA Jetson Xavier NX
+    \begin{itemize}
+        \item Volta GPU with 384 CUDA cores and 48 Tensor cores
+        \item 6-core NVIDIA Carmel Arm v8.2 64-bit CPU
+    \end{itemize}
+    \item \textbf{IMX219-83 Stereo Camera + IMU}
+    \begin{itemize}
+        \item 2 × 8-megapixel cameras, 3280 × 2464 resolution
+        \item Sony IMX219 sensor
+        \item ICM-20948 9-axis IMU (3-axis gyroscope, 3-axis accelerometer, 3-axis magnetometer)
+    \end{itemize}
+\end{itemize}
+
+\addpicture{imx219-83.jpg}{IMX219-83 Stereo Camera + IMU sensor board.}
 
 
-\section{Hardware overview}
 
-
-\section{Software architecture}
+\section{Software architecture}\label{sec:sw-overview}
 The software architecture is designed to be modular and scalable, allowing for easy
 integration of new features and components. Docker is used for containerization to ensure
 consistent environments across different deployment platforms, as well as to simplify 

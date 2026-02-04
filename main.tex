@@ -170,6 +170,22 @@
 
 \mainmatter
 
+\newcommand{\addpicture}[2]{
+    \begin{figure}[H]
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{figures/#1}
+    \caption{#2}
+    \label{fig:#1}
+    \end{figure}
+} % Macro command to easily add pictures that are fitted into text width.
+
+\newcommand{\addsvg}[2]{
+    \begin{figure}[H]
+    \includesvg[width=\textwidth,height=\textheight,keepaspectratio]{figures/#1}
+    \caption{#2}
+    \label{fig:#1}
+    \end{figure}
+} % Macro command to easily add svgs that are fitted into text width.
+
 % Write each of the chapters of the thesis into a separate file for the sake
 % of clarity. They can be \input as shown below. Give both the chapters and
 % their files as descriptive names as possible.

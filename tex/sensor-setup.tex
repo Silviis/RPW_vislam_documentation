@@ -6,11 +6,17 @@ This chapter details the sensor setup and calibration procedures used in the pro
 \section{Inertial Measurement Unit (IMU) setup}\label{sec:imu-setup}
 
 \section{Calibration}\label{sec:calibration}
+This subsection details the processes for the intrinsic calibration of both cameras and the IMU, as well as the extrinsic calibration of the whole sensor setup.
 
-\subsection{Camera Intrinsic Calibration}\label{sec:cam_intrinsic_calibration}
+\subsection{Camera Calibration}\label{sec:cam_intrinsic_calibration}
 We used the Kalibr toolbox  for intrinsic camera calibration.
+
+
 The calibration process involved capturing multiple images of a known calibration pattern
-from different angles and distances. The Kalibr toolbox then processed these images to
+from different angles and distances with the stereo camera setup. This was done to acquire the following intrinsic parameters: 
+focal lengths $f_x$ and $f_y$, principal points $c_x$ and $c_y$, 
+
+The Kalibr toolbox then processed these images to
 estimate the intrinsic parameters of the cameras, including focal length, principal point,
 and distortion coefficients.
 
@@ -19,7 +25,7 @@ and distortion coefficients.
 
 \subsection{Extrinsic camera-IMU calibration}\label{sec:extrinsic_calibration}
 The extrinsic calibration between the stereo camera and the IMU was also performed using
-the Kalibr toolbox \cite{Furgale2013}. This process involved capturing synchronized data
+the Kalibr toolbox \cite{extending_kalibr}. This process involved capturing synchronized data
 
 
 

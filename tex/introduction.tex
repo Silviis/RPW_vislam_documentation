@@ -1,2 +1,6 @@
 \chapter{Introduction}\label{ch:introduction}
-Introduction...
+VI-SLAM (Visual Inertial Simultaneous Localization and Mapping) is a method for real time state estimation and global mapping that utilizes both inertial and visual measurements. Fusing stereo or monocular image frames with high-rate inertial data allows for utilization of the best parts of both: rich geometric information from the camera(s) and short-term motion dynamics and scale ambiguity resolving from the IMU (Inertial Measurement Unit). 
+
+Goal of the project was to run a full, functional real-time SLAM on Jetson Xavier, using a custom-built sensor box with an IMX219-83 stereo camera and an IMU. Second aim of the project was to create a reproductible, containerized software pipeline which enables reliable deployment, calibration and visualization of the SLAM results on embedded hardware. 
+
+ 
