@@ -2,22 +2,43 @@
 
 \section{Team Contributions}
 % who did what
-Juuso did the camera-IMU intrinsic and extrinsic calibration, the stereo camera pipeline, image acquisition and rectification, Imu data acquisition and finally VI-Slam configuration. 
+\textbf{Juuso} was primarily responsible for camera–IMU intrinsic and extrinsic calibration, the
+development of the stereo camera pipeline, image acquisition and rectification, IMU data
+acquisition, and configuration of the visual-inertial SLAM system. Juuso also contributed
+to technical documentation related to sensor setup and calibration.
 
-Joona was responsible for technical documentation and project reporting. 
+\textbf{Joona} was responsible for technical documentation and project reporting.
 
-Eetu took care of the software integration, Jetson Xavier NX environment setup, containerized CI/CD pipeline, system architecture design and also worked with Juuso on the stereo camera pipeline and VI-SLAM configuration. 
-
+\textbf{Eetu} handled software integration, Jetson Xavier NX environment setup, development of the
+containerized CI/CD pipeline, and overall system architecture design. Eetu also contributed
+to technical documentation and collaborated closely with Juuso on the stereo camera pipeline
+and visual-inertial SLAM configuration to ensure consistent integration across system
+components.
  
 \section{Project Timeline and Management}
 % how the project was planned and executed
-At the start of the project, a Gantt chart was created to help with scheduling and project management. The Gantt graph has two main sections, setting up the VI-SLAM and then testing it. Both sections were furthermore split into sub-sections to more easily identify and quantify the needed tasks. 
+At the beginning of the project, a Gantt chart was created to support scheduling and overall
+project management. The project plan was divided into two main phases: implementation of the
+visual-inertial SLAM system and experimental evaluation. Each phase was further subdivided
+into smaller tasks to clarify dependencies and estimate the required workload. The original
+Gantt chart is shown in Figure~\ref{fig:RPW_VSLAM_project.png}.
 
-\begin{figure}[htp]
-    \centering
-    \includegraphics[width=14cm]{figures/RPW_VSLAM_project.png}
-    \caption{Original plans}
-    \label{fig:gantt}
-\end{figure}
+\addpicture{RPW_VSLAM_project.png}{Original project plan illustrated using a Gantt chart.}
 
- Unfortunately, we could not quite keep up with the planned schedule. The main reason for this was different technical difficulties. A lot more time had to be spent debugging problems than was originally anticipated, mostly regarding getting the visual feed out from the camera and calibrating it. Since getting the camera data was necessary for the other steps, we could not really parallelize tasks either. Also, rather than working on the project consistently little by little, most of the work was done in larger batches, usually right before the deadlines. 
+Despite careful planning, the project did not fully follow the initial schedule. The main
+reasons for this were unanticipated technical challenges encountered during system
+integration. In particular, significant effort was required to establish a reliable stereo
+camera pipeline and to perform accurate sensor calibration. These tasks proved more complex
+and time-consuming than originally estimated.
+
+Since successful sensor data acquisition was a prerequisite for most downstream components,
+many tasks could not be parallelized as planned. Delays in the camera pipeline therefore
+propagated to later stages of the project, including SLAM configuration and experimental
+evaluation.
+
+In addition, work on the project tended to occur in larger focused sessions rather than as
+small, continuous increments. While this approach allowed rapid progress once major issues
+were resolved, it also reduced the flexibility to adjust to unexpected delays. These
+experiences highlight the importance of allocating sufficient time for debugging and
+integration when working with complex hardware–software systems, particularly on embedded
+platforms.

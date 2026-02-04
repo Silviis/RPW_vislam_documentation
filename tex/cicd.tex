@@ -1,3 +1,100 @@
-\chapter{Deployment and CI/CD Pipeline}\label{ch:cicd}
-This chapter describes the deployment process and the Continuous Integration/Continuous
-Deployment (CI/CD) pipeline established.
+\chapter{Deployment and CI/CD Pipeline}\label{sec:deployment}
+
+To ensure reproducible deployment and to enable efficient development on embedded hardware,
+the system is deployed using containerized software components and an automated continuous
+integration and continuous deployment (CI/CD) pipeline. In addition to performance-related
+constraints, the use of containerization was also driven by host system compatibility
+limitations. The Jetson Xavier NX platform officially supports only a limited set of Linux
+distributions tied to specific NVIDIA JetPack releases. These supported host operating
+systems do not provide a common compatibility baseline with newer Linux distributions
+typically required by recent ROS~2 releases. As a result, running the required ROS~2
+software stack directly on the host system without containerization was not feasible.
+
+Building large ROS~2-based SLAM systems directly on the Jetson Xavier NX is also
+time-consuming due to limited computational resources. In practice, full builds of the
+visual-inertial SLAM stack were observed to take several hours, making on-device compilation
+impractical for iterative development.
+
+To address both host system compatibility issues and build-time limitations, Docker
+containers are used to encapsulate the complete software environment, including operating
+system dependencies, ROS~2 installations, build artifacts, and runtime configuration. All
+container images are built externally using cloud-based CI infrastructure and subsequently
+pulled onto the Jetson platform for deployment. This approach ensures consistent software
+environments across development and execution while significantly reducing deployment time.
+
+\section{Containerized Deployment}
+
+The software system is divided into two Docker containers corresponding to the sensor
+processing subsystem and the SLAM subsystem. This separation is a deliberate design choice
+driven by platform-specific constraints of the Jetson ecosystem.
+
+The SLAM container is based on the official \texttt{arm64v8/ros:humble} image, which provides
+a stable ROS~2 binary distribution with access to the standard package repositories. This
+environment is well-suited for building and running complex SLAM frameworks such as
+VINS-Fusion and RTAB-Map, which depend on a wide range of system and ROS~2 packages. The
+container build process installs all required dependencies and compiles the SLAM stack using
+\texttt{colcon}, resulting in a self-contained runtime environment.
+
+However, the \texttt{arm64v8/ros:humble} image does not include the NVIDIA JetPack SDK or the
+associated multimedia components required for camera access on the Jetson platform. In
+particular, hardware-accelerated camera capture using the \texttt{nvarguscamerasrc}
+GStreamer element is not available in this environment, making it unsuitable for direct
+sensor data acquisition from CSI cameras.
+
+Thus the camera container is based on a Jetson-specific ROS~2 image that includes the
+JetPack SDK and NVIDIA multimedia stack, enabling access to the CSI cameras and low-level
+hardware interfaces such as I2C. This environment allows efficient image capture and sensor
+interaction using GStreamer pipelines. However, in this image ROS~2 is compiled from source
+rather than provided through standard binary packages, which limits the availability of
+prebuilt ROS~2 packages and complicates dependency management for large SLAM frameworks.
+
+Due to these complementary limitations, combining sensor acquisition and SLAM processing
+into a single container was not feasible. Separating the system into two containers allows
+each environment to be optimized for its specific purpose: reliable hardware access in the
+camera container and a stable, fully featured ROS~2 ecosystem in the SLAM container.
+Communication between the containers is handled through ROS~2 topics, providing a clean and
+well-defined interface between sensor processing and state estimation components.
+
+\section{CI/CD Pipeline with GitHub Actions}
+
+To automate the container build process and avoid manual compilation on the Jetson platform,
+Docker images for both containers are built using GitHub Actions. Separate CI workflows are
+defined for the camera and SLAM containers and are triggered automatically when changes are
+made to the corresponding Dockerfiles or manually when required.
+
+The CI/CD pipeline uses Docker Buildx to perform cross-platform builds targeting the
+\texttt{linux/arm64} architecture. Upon successful completion, the resulting images are
+pushed to a container registry and tagged for deployment. This enables the Jetson Xavier NX
+to retrieve prebuilt images using standard Docker commands, eliminating the need for local
+compilation.
+
+By offloading the build process to cloud-based CI infrastructure, development iteration time
+is significantly reduced. This approach also ensures that all team members and deployment
+targets use identical software environments, minimizing configuration drift and simplifying
+debugging and maintenance.
+
+By publishing the prebuilt images to Docker Hub, the complete software stack becomes
+portable and reusable beyond the scope of this project. This supports reproducible research
+practices and enables other users to deploy the system on Jetson-based platforms with
+minimal setup effort.
+
+\section{Deployment Workflow}
+
+Deployment on the Jetson Xavier NX is performed using Docker Compose by launching the system
+from the \texttt{RPW\_vislam/docker} directory. Executing \texttt{docker compose up -d}
+retrieves the required prebuilt container images from the registry~\cite{dockerhub-camera,dockerhub-slam},
+builds a minimal local workspace containing launch files and configuration parameters, and
+starts the corresponding ROS~2 nodes in detached mode. This approach avoids recompilation of
+the full software stack on the target device while allowing flexible modification of runtime
+configuration.
+
+Since the core SLAM and sensor processing components are already compiled within the
+container images, only lightweight build steps related to launch and configuration files are
+performed on the Jetson platform. This results in short deployment times, predictable startup
+behavior, and efficient development and testing cycles.
+
+Overall, the containerized deployment strategy combined with an automated CI/CD pipeline
+proved essential for managing the complexity of the visual-inertial SLAM system on embedded
+hardware. It enabled efficient development despite limited on-device computational resources
+and resolved host system compatibility constraints, resulting in a robust and reproducible
+deployment workflow suitable for real-world experimentation.

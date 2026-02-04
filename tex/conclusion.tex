@@ -1,12 +1,39 @@
-\chapter{Conclusion and Future Work}\label{ch:conclusion}
-This chapter summarizes the findings of the project, discusses its limitations,
-and outlines potential directions for future work.
+\chapter{Conclusion and Future Work}\label{sec:conclusion}
 
-\section{Summary of Findings}
-The project successfully developed a SLAM system that integrates sensor data acquisition,
-processing, and mapping capabilities. The experiments demonstrated the system's ability to
-accurately localize and map the environment under various conditions.
+This project demonstrated the successful implementation of a real-time visual-inertial
+SLAM system on the Jetson Xavier NX using a custom-built sensor box consisting of a stereo
+camera and an IMU. The complete pipeline, from sensor data acquisition and calibration to
+state estimation, mapping, and visualization, was implemented using ROS~2 and deployed
+through a containerized software architecture. By leveraging automated CI/CD workflows, the
+system achieved reproducible and efficient deployment despite the constraints of embedded
+hardware and platform-specific compatibility limitations.
 
+The results show that reliable visual-inertial SLAM can be achieved on resource-constrained
+embedded platforms when careful attention is paid to system architecture, sensor setup, and
+deployment strategy. The separation of sensor processing and SLAM computation into distinct
+containers proved effective in addressing Jetson-specific software constraints while
+maintaining a modular and extensible system design.
 
-\section{Limitations}
-Despite the successful implementation, several limitations were identified...
+\section{Future Work}
+
+While the system performed well in controlled indoor environments, several improvements can
+be identified for future development. One significant enhancement would be the use of
+hardware-synchronized stereo cameras. In the current setup, the left and right camera images
+are captured sequentially in software and timestamped individually, resulting in a small
+temporal offset between stereo image pairs. Although acceptable for the evaluated scenarios,
+this offset can introduce inconsistencies during rapid motion or in highly dynamic scenes.
+
+Employing cameras with hardware-level synchronization or global shutter support would ensure
+more accurate temporal alignment between stereo frames. This would improve feature
+correspondence, depth estimation accuracy, and overall SLAM robustness, particularly in
+challenging motion conditions.
+
+Another important direction for future work is improving the mechanical design of the
+sensor enclosure for outdoor operation. The current enclosure is suitable for indoor use
+but offers limited protection against environmental factors such as dust, moisture, and
+direct sunlight. A more robust enclosure with improved weather sealing, vibration damping,
+and thermal management would be necessary for reliable long-term outdoor deployment.
+
+Additional future work could include extending the system to outdoor environments, improving
+time synchronization between sensors, and evaluating alternative SLAM backends or sensor
+configurations to further enhance performance and robustness.

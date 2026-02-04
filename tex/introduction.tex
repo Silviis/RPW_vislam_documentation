@@ -1,6 +1,24 @@
-\chapter{Introduction}\label{ch:introduction}
-VI-SLAM (Visual Inertial Simultaneous Localization and Mapping) is a method for real time state estimation and global mapping that utilizes both inertial and visual measurements. Fusing stereo or monocular image frames with high-rate inertial data allows for utilization of the best parts of both: rich geometric information from the camera(s) and short-term motion dynamics and scale ambiguity resolving from the IMU (Inertial Measurement Unit). 
+\chapter{Introduction}
 
-Goal of the project was to run a full, functional real-time SLAM on Jetson Xavier, using a custom-built sensor box with an IMX219-83 stereo camera and an IMU. Second aim of the project was to create a reproductible, containerized software pipeline which enables reliable deployment, calibration and visualization of the SLAM results on embedded hardware. 
+VI-SLAM (Visual-Inertial Simultaneous Localization and Mapping) is a method for real-time
+state estimation and global mapping that utilizes both inertial and visual measurements.
+Fusing stereo or monocular image frames with high-rate inertial data allows for the
+utilization of the strengths of both sensing modalities: rich geometric information from
+the camera(s) and short-term motion dynamics with scale ambiguity resolution provided by
+the IMU (Inertial Measurement Unit).
+
+The goal of the project was to implement a fully functional real-time visual-inertial SLAM
+system on the Jetson Xavier NX using a custom-built sensor box equipped with an IMX219-83
+stereo camera and an IMU. A secondary goal of the project was to create a reproducible and
+containerized software pipeline that enables reliable deployment, calibration, and
+visualization of SLAM results on embedded hardware.
+
+Running visual-inertial SLAM on embedded platforms poses several challenges, including
+limited computational resources, platform-specific software constraints, and tight
+coupling between hardware and software components. These challenges require careful system
+design, efficient deployment strategies, and robust sensor integration. By addressing
+these aspects, the project aims to demonstrate that accurate and reliable VI-SLAM can be
+achieved on resource-constrained systems while maintaining reproducibility and modularity
+in the software architecture.
 
  
